@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>跨境财务成果综合分析系统</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+    <style>
+        :root {
+            --primary-color: #1880ff;
+            --cyber-blue: #00f3ff;
+            --dark-bg: #0a1633;
+            --neon-pink: #ff00ff;
+            --glow: 0 0 20px rgba(24, 144, 255, 0.4);
+        }
+
+        body {
+            background: linear-gradient(135deg, #0a1633 0%, #001529 100%);
+            color: #e0f2fe;
+            min-height: 100vh;
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+        }
+
+        .cyber-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 30px;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 2.5em;
+            text-shadow: var(--glow);
+            margin-bottom: 40px;
+            background: linear-gradient(45deg, var(--primary-color), var(--cyber-blue));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .upload-section {
+            border: 2px solid var(--primary-color);
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 30px;
+            background: rgba(10, 22, 51, 0.9);
+            box-shadow: var(--glow);
+            position: relative;
+        }
+
+        .cyber-btn {
+            background: linear-gradient(45deg, var(--primary-color), #0052d4);
+            border: none;
+            color: white;
+            padding: 12px 30px;
+            border-radius: 30px;
+            cursor: pointer;
+            margin: 10px;
+            transition: 0.3s;
+            border: 1px solid var(--cyber-blue);
+        }
+
+        .cyber-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 20px var(--primary-color);
+        }
+
+        .result-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 30px;
+            background: rgba(10, 22, 51, 0.9);
+            border: 1px solid var(--primary-color);
+            box-shadow: var(--glow);
+        }
+
+        .result-table th, .result-table td {
+            padding: 12px;
+            border: 1px solid rgba(24, 144, 255, 0.3);
+            text-align: center;
+        }
+
+        .negative {
+            color: #ff4d4f;
+        }
+
+        .status-panel {
+            background: rgba(0, 0, 0, 0.5);
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            border: 1px solid var(--primary-color);
+            color: #e0f2fe;
+            text-align: center;
+        }
+        
+        .scaled-down {
+            transform: scale(0.4);
+            transform-origin: top left;
+        }
+
+        /* 添加视频样式以适应容器 */
+        video {
+            width: 100%;
+            height: auto;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <audio id="clickSound" src="鼠标声.mp3" preload="auto"></audio>
+
+    <div class="cyber-container">
+        <h1><i class="fas fa-calculator"></i> 跨境财务成果综合分析系统</h1>
+
+        <div class="upload-section">
+            <div style="text-align: center">
+                <button class="cyber-btn" onclick="playSound(); document.getElementById('purchaseInput').click()">
+                    <i class="fas fa-box"></i> 财务成果数据导入
+                </button>
+            </div>
+
+            <input type="file" id="purchaseInput" hidden multiple accept=".xlsx" onchange="handleFileUpload('purchaseCost', this)">
+
+            <div class="status-panel" id="uploadStatus">
+                <i class="fas fa-info-circle"></i> 等待文件上传...
+            </div>
+        </div>
+
+        <button class="cyber-btn" onclick="playSound(); displayVideo()">
+            <i class="fas fa-magic"></i> 提交
+        </button>
+
+        <div id="resultContainer"></div>
+        
+        <div id="videoContainer" style="margin-top: 20px;">
+            <video id="visualizationVideo" src="" alt="可视化视频" loop muted autoplay></video>
+            <div id="videoError" style="display: none; color: red; text-align: center;">视频加载失败</div>
+        </div>
+    </div>
+
+    <script>
+        const statusMessages = {
+            purchaseCost: "未上传销售数据表"
+        };
+
+        function handleFileUpload(type, input) {
+            const files = input.files;
+            if (files.length > 0) {
+                statusMessages[type] = `已上传文件数：${files.length}`;
+                updateStatus();
+            }
+        }
+
+        function updateStatus() {
+            document.getElementById('uploadStatus').innerHTML = `
+                <div>${statusMessages.purchaseCost}</div>`;
+        }
+
+        function playSound() {
+            const sound = document.getElementById('clickSound');
+            sound.currentTime = 0; // 使音频从头开始播放
+            sound.play().catch(error => console.error("播放音频时出错：", error));
+        }
+
+        function displayVideo() {
+            const video = document.getElementById('visualizationVideo');
+            const videoError = document.getElementById('videoError');
+            video.onloadstart = function() {
+                video.style.display = 'block';
+                videoError.style.display = 'none';
+            };
+            video.onerror = function() {
+                video.style.display = 'none';
+                videoError.style.display = 'block';
+            };
+            video.src = './财务成果分析.mp4'; // 设置视频路径
+            video.load();
+        }
+    </script>
+</body>
+</html>
+
